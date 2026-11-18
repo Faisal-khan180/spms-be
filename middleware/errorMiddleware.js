@@ -10,12 +10,17 @@ function notFound(req, res, next) {
 function errorHandler(err, req, res, next) {
   const statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
 
-  // Only log stack traces for actual server errors (500), not routine 404s
-  if (statusCode >= 500 && process.env.NODE_ENV !== 'production') {
-    console.error(err.stack);
+  if (statusCode >= 500) {
+    console.error('Request failed with a server error.', {
+      method: req.method,
+      path: req.originalUrl,
+      code: err.code,
+      message: err.message,
+      stack: err.stack
+    });
   }
 
-  const message = statusCode === 500 && process.env.NODE_ENV === 'production'
+  const message = statusCode >= 500
     ? 'Internal Server Error'
     : err.message;
 
