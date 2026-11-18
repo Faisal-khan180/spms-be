@@ -9,6 +9,7 @@
  */
 require('dotenv').config();
 const mysql = require('mysql2/promise');
+const { getDatabaseConfig } = require('../config/databaseConfig');
 
 async function columnExists(connection, table, column) {
   const [rows] = await connection.execute(
@@ -33,13 +34,7 @@ async function addColumnIfMissing(connection, table, column, definition) {
 }
 
 async function migrate() {
-  const connection = await mysql.createConnection({
-    host:     process.env.DB_HOST     || 'localhost',
-    port:     process.env.DB_PORT     || 3306,
-    user:     process.env.DB_USER     || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME     || 'placement_management',
-  });
+  const connection = await mysql.createConnection(getDatabaseConfig());
 
   try {
     console.log('Phase 6 migration: extending placement_drives ...');
